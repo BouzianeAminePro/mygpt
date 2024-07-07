@@ -139,3 +139,5 @@ This project is licensed under the MIT License.
 - [lucide-react](https://lucide.dev/)
 
 Feel free to modify this README to better fit your project's specifics!
+
+![alt text](/public/img/image.png)

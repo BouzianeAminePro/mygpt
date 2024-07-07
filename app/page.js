@@ -50,7 +50,7 @@ export default function Page() {
           body: JSON.stringify({
             model: "llama3",
             prompt: enableContext
-              ? `Using this data: ${lastGeneratedPrompt} respond to this prompt: ${prompt}`
+              ? `Using this data: ${lastGeneratedPrompt} to respond to this prompt: ${prompt}`
               : prompt,
           }),
         }
