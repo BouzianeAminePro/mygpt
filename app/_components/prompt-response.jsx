@@ -28,22 +28,22 @@ export default function PromptResponse({ title, response, hasSpeech = true }) {
             className="text-sm"
             dangerouslySetInnerHTML={{ __html: response }}
           ></div>
-          {hasSpeech &&
-            (isSpeaking ? (
-              <Button variant="outline" size="icon">
-                <VolumeX onClick={() => cancelSpeech()} />
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => speak(response)}
-              >
-                <Volume2 />
-              </Button>
-            ))}
+            {hasSpeech &&
+              (isSpeaking ? (
+                <Button variant="outline" size="icon">
+                  <VolumeX onClick={() => cancelSpeech()} />
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => speak(response)}
+                >
+                  <Volume2 />
+                </Button>
+              ))}
+          </div>
         </div>
-      </div>
     </>
   );
 }
