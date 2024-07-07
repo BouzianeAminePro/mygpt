@@ -124,7 +124,7 @@ export default function Page() {
           placeholder="Prompt here..."
           onChange={(e) => setPrompt(e?.target?.value)}
           className="py-1.5 pl-7 pr-20 w-[50rem]"
-          disabled={isRunning}
+          disabled={isRunning || isPending}
         />
         {isPending ? (
           <Button disabled>

@@ -11,7 +11,7 @@ export default function PromptResponse({ title, response, hasSpeech = true }) {
   const { speak, isSpeaking, cancelSpeech } = useSpeechSynthesis();
   return (
     <>
-      <div className="prompt text-lg font-semibold ml-auto bg-slate-600 p-2.5 rounded-2xl dark:text-white text-white w-[50ch]">
+      <div className="prompt text-xl font-semibold ml-auto bg-slate-600 p-2.5 rounded-2xl dark:text-white text-white w-[50ch]">
         {title}
       </div>
       <div className="flex flex-row gap-x-3 items-center">
@@ -25,7 +25,7 @@ export default function PromptResponse({ title, response, hasSpeech = true }) {
         />
         <div className="flex flex-col gap-y-3">
           <div
-            className="text-sm"
+            className="text-base"
             dangerouslySetInnerHTML={{ __html: response }}
           ></div>
             {hasSpeech &&
