@@ -25,15 +25,20 @@ export default function Page() {
     false
   );
 
+  const historyKeys = useMemo(() => Object.keys(history), [history]);
+
+  const lastGeneratedPrompt = useMemo(
+    () =>
+      historyKeys?.length !== 0
+        ? history[historyKeys[historyKeys.length - 1]]
+        : null,
+    [history, historyKeys]
+  );
+
   const stopGeneration = useCallback(async () => {
     await bodyReader?.cancel();
     setPrompt("");
   }, [bodyReader]);
-
-  const lastGeneratedPrompt = useMemo(() => {
-    const keys = Object.keys(history);
-    return keys?.length !== 0 ? history[keys[keys.length - 1]] : null;
-  }, [history]);
 
   const generate = useCallback(async () => {
     try {
@@ -48,7 +53,7 @@ export default function Page() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "llama3",
+            model: process.env.NEXT_PUBLIC_OLLAMA_MODEL,
             prompt: enableContext
               ? `Using this data: ${lastGeneratedPrompt} to respond to this prompt: ${prompt}`
               : prompt,
@@ -97,22 +102,18 @@ export default function Page() {
       <div className="flex flex-col gap-y-10">
         <div className="mb-14 gap-y-3 flex flex-col justify-center items-center">
           <div className="w-[100ch]">
-            {Object.keys(history).map((key, index) => (
+            {historyKeys.map((key, index) => (
               <div
-                ref={
-                  Object.keys(history).length - 1 === index ? outputRef : null
-                }
+                ref={historyKeys.length - 1 === index ? outputRef : null}
                 className="flex flex-col gap-y-3 my-3"
                 key={key}
               >
                 <PromptResponse
                   title={key}
                   response={marked(history[key])}
-                  hasSpeech={
-                    !(Object.keys(history).length - 1 === index && isRunning)
-                  }
+                  hasSpeech={!(historyKeys.length - 1 === index && isRunning)}
                 />
-                {Object.keys(history).length - 1 !== index && <Separator />}
+                {historyKeys.length - 1 !== index && <Separator />}
               </div>
             ))}
           </div>

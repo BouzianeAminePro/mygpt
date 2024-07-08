@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project is a React-based web application that allows users to input prompts, send them to a server for processing, and display the responses in a conversational format. The application also maintains a history of prompts and responses, with features to enable or disable contextual responses based on previous prompts.
+This project is a NextJS application that allows users to input prompts, send them to a server for processing, and display the responses in a conversational format. The application maintains a history of prompts and responses, with features to enable or disable contextual responses based on previous prompts.
 
 ## Key Features
 
@@ -17,7 +17,7 @@ This project is a React-based web application that allows users to input prompts
 
 ### Main Components
 
-- **Page Component**: The main component that handles the entire workflow, including state management, input handling, and rendering responses.
+- **Page Component**: Handles the entire workflow, including state management, input handling, and rendering responses.
 
 ### UI Components
 
@@ -76,6 +76,7 @@ Create a `.env.local` file in the root of your project and add the following:
 
 ```env
 NEXT_PUBLIC_OLLAMA_API_URL=<Your API URL>
+NEXT_PUBLIC_OLLAMA_MODEL=<Your Model Name>
 ```
 
 ### Usage

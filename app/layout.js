@@ -12,10 +12,10 @@ const dosis = Dosis({
 
 export const metadata = {
   title: "My custom chatgpt",
-  description: "Chat with llama 3 meta model",
+  description: "Chat with ollama models",
 };
 
-export default async function RootLayout({ children }) {
+export default async function Layout({ children }) {
   return (
     <html lang="en">
       <body className={dosis.className}>
@@ -25,19 +25,21 @@ export default async function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <nav className="flex flex-row m-2">
-            <div className="flex flex-none items-center justify-center h-[40px] w-[40px] rounded-lg">
-              <Image
-                src="/img/logo.svg"
-                alt="logo"
-                width={40}
-                height={40}
-                priority={false}
-                className="dark:invert"
-              />
-            </div>
-            <div className="ml-auto">
-              <ThemeToggler />
+          <nav className="fixed w-full px-2">
+            <div className="flex flex-row">
+              <div className="flex flex-none items-center justify-center h-[40px] w-[40px] rounded-lg">
+                <Image
+                  src="/img/logo.svg"
+                  alt="logo"
+                  width={40}
+                  height={40}
+                  priority={false}
+                  className="dark:invert"
+                />
+              </div>
+              <div className="ml-auto">
+                <ThemeToggler />
+              </div>
             </div>
           </nav>
           {children}
