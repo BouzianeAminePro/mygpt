@@ -11,6 +11,7 @@ import { Input } from "./_components/ui/input";
 import PromptResponse from "./_components/prompt-response";
 import { Separator } from "./_components/ui/separator";
 import { cn } from "@/lib/utils";
+import ModelSelector from "./_components/model-selector";
 
 export default function Page() {
   const [prompt, setPrompt] = useState("");
@@ -24,16 +25,17 @@ export default function Page() {
     "enableContext",
     false
   );
+  const [selectedModel, setSelectedModel] = useState("");
 
-  const historyKeys = useMemo(() => Object.keys(history), [history]);
+  const historyKeys = useMemo(() => history ? Object.keys(history) : [], [history]);
 
-  const lastGeneratedPrompt = useMemo(
-    () =>
-      historyKeys?.length !== 0
-        ? history[historyKeys[historyKeys.length - 1]]
-        : null,
-    [history, historyKeys]
-  );
+  // const lastGeneratedPrompt = useMemo(
+  //   () =>
+  //     historyKeys?.length !== 0
+  //       ? history[historyKeys[historyKeys.length - 1]]
+  //       : null,
+  //   [history, historyKeys]
+  // );
 
   const stopGeneration = useCallback(async () => {
     await bodyReader?.cancel();
@@ -53,9 +55,9 @@ export default function Page() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: process.env.NEXT_PUBLIC_OLLAMA_MODEL,
+            model: selectedModel || process.env.NEXT_PUBLIC_OLLAMA_MODEL,
             prompt: enableContext
-              ? `Using this data: ${lastGeneratedPrompt} to respond to this prompt: ${prompt}`
+              ? `Using this data: ${historyKeys} \n to respond to this prompt: ${prompt}`
               : prompt,
           }),
         }
@@ -91,11 +93,11 @@ export default function Page() {
     } catch (error) {
       console.error("Error fetching the streaming response:", error);
     }
-  }, [prompt, history, enableContext]);
+  }, [prompt, history, enableContext, selectedModel]);
 
-  useEffect(() => {
-    if (isRunning) outputRef?.current?.scrollIntoView();
-  }, [outputRef, isRunning, lastGeneratedPrompt]);
+  // useEffect(() => {
+  //   if (isRunning) outputRef?.current?.scrollIntoView();
+  // }, [outputRef, isRunning, historyKeys]);
 
   return (
     <div className="m-4">
@@ -120,6 +122,9 @@ export default function Page() {
         </div>
       </div>
       <div className="flex flex-row gap-x-2 fixed bottom-0 justify-center items-center w-full my-2">
+        <div className="py-1.5 pl-7 pr-3 w-[15rem]">
+          <ModelSelector onModelSelect={setSelectedModel} />
+        </div>
         <Input
           value={prompt}
           placeholder="Prompt here..."
