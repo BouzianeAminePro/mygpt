@@ -9,7 +9,7 @@ export function ThemeToggler() {
 
   return (
     <Button
-      variant="outline"
+      variant="muted"
       size="icon"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >

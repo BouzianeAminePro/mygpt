@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { marked } from "marked";
 import { CirclePlay, CircleStop, History, Loader2 } from "lucide-react";
 
 import { useLocalStorage } from "./_hooks/useLocalStorage";
@@ -18,6 +17,8 @@ export default function Page() {
   const [isRunning, setIsRunning] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [bodyReader, setBodyReader] = useState();
+  const [autoScroll, setAutoScroll] = useState(true);
+
   const outputRef = useRef();
 
   const [history, setHistory] = useLocalStorage("history", {});
@@ -29,23 +30,18 @@ export default function Page() {
 
   const historyKeys = useMemo(() => history ? Object.keys(history) : [], [history]);
 
-  // const lastGeneratedPrompt = useMemo(
-  //   () =>
-  //     historyKeys?.length !== 0
-  //       ? history[historyKeys[historyKeys.length - 1]]
-  //       : null,
-  //   [history, historyKeys]
-  // );
-
   const stopGeneration = useCallback(async () => {
     await bodyReader?.cancel();
     setPrompt("");
+    setAutoScroll(false);
   }, [bodyReader]);
 
   const generate = useCallback(async () => {
     try {
       setHistory((prev) => ({ ...prev, [prompt]: "" }));
       setIsPending(true);
+
+      const lastThreeHistory = historyKeys.slice(-3).map(key => history[key]).join('\n');
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_OLLAMA_API_URL}/generate`,
@@ -57,7 +53,7 @@ export default function Page() {
           body: JSON.stringify({
             model: selectedModel || process.env.NEXT_PUBLIC_OLLAMA_MODEL,
             prompt: enableContext
-              ? `Using this data: ${historyKeys} \n to respond to this prompt: ${prompt}`
+              ? `Using this data: ${lastThreeHistory} \n to respond to this prompt: ${prompt}`
               : prompt,
           }),
         }
@@ -77,6 +73,7 @@ export default function Page() {
 
       setPrompt("");
       setIsRunning(true);
+      setAutoScroll(true);
 
       while (!done) {
         const { value, done: doneReading } = await reader.read();
@@ -90,14 +87,30 @@ export default function Page() {
       }
 
       setIsRunning(false);
+      setAutoScroll(false);
     } catch (error) {
       console.error("Error fetching the streaming response:", error);
     }
   }, [prompt, history, enableContext, selectedModel]);
 
-  // useEffect(() => {
-  //   if (isRunning) outputRef?.current?.scrollIntoView();
-  // }, [outputRef, isRunning, historyKeys]);
+  // Handle auto-scroll
+  useEffect(() => {
+    if (isRunning && autoScroll && outputRef?.current) {
+      outputRef.current.scrollIntoView();
+    }
+  }, [isRunning, outputRef?.current]);
+
+  // Detect manual scrolling
+  const handleScroll = () => {
+    if (!outputRef?.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = outputRef?.current;
+    // If the user scrolls away from the bottom, stop auto-scrolling
+    if (scrollTop + clientHeight < scrollHeight - 10) {
+      setAutoScroll(false);
+    } else {
+      setAutoScroll(true);
+    }
+  };
 
   return (
     <div className="m-4">
@@ -109,10 +122,11 @@ export default function Page() {
                 ref={historyKeys.length - 1 === index ? outputRef : null}
                 className="flex flex-col gap-y-3 my-3"
                 key={key}
+                onScroll={handleScroll}
               >
                 <PromptResponse
                   title={key}
-                  response={marked(history[key])}
+                  response={history[key]}
                   hasSpeech={!(historyKeys.length - 1 === index && isRunning)}
                 />
                 {historyKeys.length - 1 !== index && <Separator />}
